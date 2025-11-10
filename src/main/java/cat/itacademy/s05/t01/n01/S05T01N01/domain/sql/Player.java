@@ -1,22 +1,25 @@
 package cat.itacademy.s05.t01.n01.S05T01N01.domain.sql;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
-@Table(name = "player")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table("player")
 public class Player {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    private int gamesPlayed;
-    private int gamesWon;
 
+    @Column("games_played")
+    private int gamesPlayed;
+
+    @Column("games_won")
+    private int gamesWon;
 }

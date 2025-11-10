@@ -1,12 +1,11 @@
 package cat.itacademy.s05.t01.n01.S05T01N01.repository.sql;
 
 import cat.itacademy.s05.t01.n01.S05T01N01.domain.sql.Player;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface PlayerRepository extends JpaRepository<Player, Long> {
-    Optional<Player> findByName(String name);
-    List<Player> findAllByOrderByGamesWonDesc();
+public interface PlayerRepository extends ReactiveCrudRepository<Player, Long> {
+    Mono<Player> findByName(String name);
+    Flux<Player> findAllByOrderByGamesWonDesc();
 }

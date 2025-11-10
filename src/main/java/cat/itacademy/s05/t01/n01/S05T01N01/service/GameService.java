@@ -30,13 +30,12 @@ public class GameService {
     }
 
     public Mono<GameResponse> createGame(String playerName) {
-        if (playerName == null || playerName.isEmpty()) {
-            throw new AttributeInvalidException("Error: El nombre no puede ser vacio");
+        if (playerName == null || playerName.isBlank()) {
+            return Mono.error(new AttributeInvalidException("Error: El nombre no puede ser vacío"));
         }
-        return Mono.fromCallable(() ->
-                        playerRepository.findByName(playerName)
-                                .orElseThrow(() -> new EntityNotFoundException("Jugador no encontrado"))
-                )
+
+        return playerRepository.findByName(playerName)
+                .switchIfEmpty(Mono.error(new EntityNotFoundException("Jugador no encontrado")))
                 .flatMap(player -> {
                     Deck deck = Deck.multipleDecks(2);
                     List<Card> cards = new ArrayList<>(deck.getCards());
@@ -58,9 +57,9 @@ public class GameService {
 
                     return gameRepository.save(game);
                 })
-                .doOnError(Throwable::printStackTrace)
                 .map(this::toGameResponse);
     }
+
 
 
 

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,14 +35,13 @@ class PlayerControllerTest {
 
         Mono<Player> result = playerController.createPlayer(createPlayerRequest);
 
-        Player playerSaved = result.block();
-        assertAll(
-                ()-> assertNotNull(playerSaved),
-                ()-> assertEquals(name, playerSaved.getName()),
-                ()-> assertEquals(0, playerSaved.getGamesPlayed()),
-                ()-> assertEquals(0, playerSaved.getGamesWon())
-        );
+        StepVerifier.create(result)
+                .expectNextMatches(player -> player.getName().equals(name)
+                        && player.getGamesPlayed() == 0
+                        && player.getGamesWon() == 0)
+                .verifyComplete();
 
         verify(playerService, times(1)).createPlayer(name);
     }
+
 }

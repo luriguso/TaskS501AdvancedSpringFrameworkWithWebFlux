@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
 
-@RestControllerAdvice(basePackages = "cat.itacademy.s05.t01.n01.S05T01N01")
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -28,8 +28,8 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", ex.getMessage()));
     }
 
-    @ExceptionHandler(GameAlreadyFinishedException.class)
-    public ResponseEntity<Map<String, String>> handleGameFinished(GameAlreadyFinishedException ex) {
+    @ExceptionHandler({GameAlreadyFinishedException.class, InvalidMoveException.class})
+    public ResponseEntity<Map<String, String>> handleGameErrors(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("error", ex.getMessage()));
     }
@@ -37,6 +37,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneric(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", ex.getMessage()));
+                .body(Map.of("error", "Internal error"));
     }
 }

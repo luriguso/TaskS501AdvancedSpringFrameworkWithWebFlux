@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
-
 @Service
 public class PlayerService {
 
@@ -22,52 +20,47 @@ public class PlayerService {
     }
 
     public Mono<Player> createPlayer(String name) {
-
-        return Mono.fromCallable(() -> {
-            if(name.isEmpty()){
-                throw new AttributeInvalidException("Error: El nombre no puede ser vacio");
-            }
-            Optional<Player> playerDB = playerRepository.findByName(name);
-            if (playerDB.isPresent()) {
-                throw new DuplicatePlayerException("Error: Ya existe un jugador llamado " + name);
-            }
-            Player player = new Player();
-            player.setName(name);
-            player.setGamesPlayed(0);
-            player.setGamesWon(0);
-            return playerRepository.save(player);
-        });
+        if (name == null || name.isBlank()) {
+            return Mono.error(new AttributeInvalidException("Error: El nombre no puede ser vacío"));
+        }
+        return playerRepository.findByName(name)
+                .flatMap(p -> Mono.error(new DuplicatePlayerException("Error: Ya existe un jugador llamado " + name)))
+                .switchIfEmpty(
+                        playerRepository.save(Player.builder()
+                                .name(name.trim())
+                                .gamesPlayed(0)
+                                .gamesWon(0)
+                                .build()
+                        )
+                )
+                .cast(Player.class);
     }
 
     public Mono<Player> updatePlayerName(Long playerId, String newName) {
-        return Mono.fromCallable(() ->
-                playerRepository.findById(playerId)
-                        .orElseThrow(() -> new EntityNotFoundException("Jugador no encontrado"))
-        ).flatMap(player -> Mono.fromCallable(() -> {
-            player.setName(newName);
-            return playerRepository.save(player);
-        }));
+        if (newName == null || newName.isBlank()) {
+            return Mono.error(new AttributeInvalidException("Error: El nombre no puede ser vacío"));
+        }
+        return playerRepository.findById(playerId)
+                .switchIfEmpty(Mono.error(new EntityNotFoundException("Jugador no encontrado")))
+                .flatMap(p -> {
+                    p.setName(newName.trim());
+                    return playerRepository.save(p);
+                });
     }
 
     public Mono<Player> getPlayer(Long playerId) {
-        return Mono.fromCallable(() ->
-                playerRepository.findById(playerId)
-                        .orElseThrow(() -> new EntityNotFoundException("Jugador no encontrado"))
-        );
+        return playerRepository.findById(playerId)
+                .switchIfEmpty(Mono.error(new EntityNotFoundException("Jugador no encontrado")));
     }
 
     public Mono<Void> deletePlayer(Long playerId) {
-        return Mono.fromCallable(() -> {
-            Player player = playerRepository.findById(playerId)
-                    .orElseThrow(() -> new EntityNotFoundException("Jugador no encontrado"));
-            playerRepository.deleteById(playerId);
-            return Void.TYPE;
-        }).then();
+        return playerRepository.findById(playerId)
+                .switchIfEmpty(Mono.error(new EntityNotFoundException("Jugador no encontrado")))
+                .flatMap(existing -> playerRepository.deleteById(playerId));
     }
 
-
     public Flux<Ranking> getRanking() {
-        return Flux.fromIterable(playerRepository.findAllByOrderByGamesWonDesc())
+        return playerRepository.findAllByOrderByGamesWonDesc()
                 .map(player -> Ranking.builder()
                         .playerId(player.getId())
                         .playerName(player.getName())

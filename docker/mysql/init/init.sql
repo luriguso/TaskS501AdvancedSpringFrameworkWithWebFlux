@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS blackjack;
+USE blackjack;
+
+CREATE TABLE IF NOT EXISTS player (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    games_played INT DEFAULT 0,
+    games_won INT DEFAULT 0
+);

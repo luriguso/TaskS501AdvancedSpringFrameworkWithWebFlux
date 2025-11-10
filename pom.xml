@@ -8,53 +8,40 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.6</version>
+		<version>3.3.5</version>
 		<relativePath/>
 	</parent>
 
 	<groupId>cat.itacademy.s05.t01.n01</groupId>
 	<artifactId>S05T01N01</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>S05T01N01</name>
-	<description>S05T01N01 Luis Ricardo Gutierrez Soliz</description>
 
 	<properties>
 		<java.version>21</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring-boot.run.jvmArguments>-Dfile.encoding=UTF-8</spring-boot.run.jvmArguments>
 	</properties>
 
 	<dependencies>
-		<!-- Spring Boot básico -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-
 		<!-- WebFlux -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 
-		<!-- MongoDB reactivo -->
+		<!-- Reactive MongoDB -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
 		</dependency>
 
-		<!-- JPA para MySQL -->
+		<!-- R2DBC para MySQL -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
 		</dependency>
-
-		<!-- Driver MySQL -->
 		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
-			<scope>runtime</scope>
+			<groupId>dev.miku</groupId>
+			<artifactId>r2dbc-mysql</artifactId>
+			<version>0.8.2.RELEASE</version>
 		</dependency>
 
 		<!-- Lombok -->
@@ -64,19 +51,24 @@
 			<optional>true</optional>
 		</dependency>
 
-        <!-- Swagger / OpenAPI 3 -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
-            <version>2.6.0</version>
-        </dependency>
+		<!-- Swagger / OpenAPI (WebFlux) -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+			<version>2.6.0</version>
+		</dependency>
 
-
-        <!-- Testing -->
+		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.projectreactor</groupId>
@@ -88,7 +80,6 @@
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -99,5 +90,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
